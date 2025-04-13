@@ -1,0 +1,14 @@
+{
+  "name": "screen-sharing-app",
+  "version": "1.0.0",
+  "description": "Screen sharing application with authentication",
+  "scripts": {
+    "start:auth": "cd log && npm run dev",
+    "start:screen": "cd SCREEN && npm start",
+    "dev": "concurrently \"npm run start:auth\" \"npm run start:screen\"",
+    "start": "node start-app.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 
