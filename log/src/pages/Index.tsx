@@ -13,7 +13,8 @@ const Index = () => {
 
   useEffect(() => {
     if (!loading && user) {
-      window.location.href = 'http://localhost:3010';
+      const screenAppUrl = import.meta.env.VITE_SCREEN_APP_URL || 'http://localhost:3010';
+      window.location.href = screenAppUrl;
     }
   }, [user, loading]);
 
