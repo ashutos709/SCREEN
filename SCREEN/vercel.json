@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/src/Server.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/src/Server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "SERVER_PORT": "3010",
+    "SERVER_HOST": "0.0.0.0",
+    "MEDIASOUP_LISTEN_IP": "0.0.0.0",
+    "AUTH_ENABLED": "true"
+  }
+} 
