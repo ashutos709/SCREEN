@@ -3,23 +3,25 @@
   "builds": [
     {
       "src": "app/src/Server.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/socket.io/(.*)",
       "dest": "app/src/Server.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "app/src/Server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "public/$1"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "SERVER_PORT": "3010",
-    "SERVER_HOST": "0.0.0.0",
-    "MEDIASOUP_LISTEN_IP": "0.0.0.0",
-    "AUTH_ENABLED": "true"
-  }
+  ]
 } 
