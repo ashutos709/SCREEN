@@ -69,8 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (!error && data) {
         // Redirect to screen sharing application after successful signup
-        const screenAppUrl = import.meta.env.VITE_SCREEN_APP_URL || 'http://localhost:3010';
-        window.location.href = screenAppUrl;
+        window.location.href = 'http://localhost:3010';
       }
       
       return { data, error };
@@ -89,8 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (!error && data) {
         // Redirect to screen sharing application after successful login
-        const screenAppUrl = import.meta.env.VITE_SCREEN_APP_URL || 'http://localhost:3010';
-        window.location.href = screenAppUrl;
+        window.location.href = 'http://localhost:3010';
       }
       
       return { data, error };
@@ -103,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       // Start the screen sharing application
-      const screenAppUrl = import.meta.env.VITE_SCREEN_APP_URL || 'http://localhost:3010';
+      const screenAppUrl = 'http://localhost:3010';
       console.log('Starting screen sharing application:', screenAppUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
