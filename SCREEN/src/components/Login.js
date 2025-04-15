@@ -37,53 +37,52 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     setLoading(true);
+    setError(null);
+    
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        // Attempt to login
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-    try {
-      // Attempt to sign in
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+        if (loginError) throw loginError;
 
-      if (error) {
-        if (error.message.includes('confirmed')) {
-          setError('Please verify your email before logging in.');
-        } else if (error.message.includes('credentials')) {
-          setError('Invalid email or password.');
+        // Fetch user data
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', loginData.user.id)
+          .single();
+
+        if (userError) throw userError;
+
+        // Successful login
+        setSuccess('Login successful!');
+        
+        // Redirect to home page
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+
+        break; // Exit retry loop on success
+      } catch (error) {
+        console.error('Login error:', error);
+        retries--;
+        
+        if (retries === 0) {
+          setError(error.message || 'An error occurred during login. Please try again.');
         } else {
-          setError(error.message);
+          console.log(`Retrying login... ${retries} attempts remaining`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second between retries
         }
-        return;
       }
-
-      // Check if user exists in users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-
-      if (userError && !userError.message?.includes('no rows')) {
-        console.error('Error fetching user data:', userError);
-      }
-
-      // Successful login
-      setSuccess('Login successful!');
-      
-      // Redirect to home page
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('An error occurred during login. Please try again.');
-    } finally {
-      setLoading(false);
     }
+    
+    setLoading(false);
   };
 
   return (

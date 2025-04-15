@@ -24,6 +24,14 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+interface RedirectData {
+  data: {
+    user: User | null;
+    session: Session | null;
+  } | null;
+  error: Error | null;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -54,6 +62,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const handleRedirect = ({ data, error }: RedirectData) => {
+    if (!error && data?.user) {
+      const screenAppUrl = 'http://localhost:3010';
+      // Add a small delay to ensure the session is properly set
+      setTimeout(() => {
+        window.location.href = screenAppUrl;
+      }, 500);
+    }
+  };
+
   const signUp = async (email: string, password: string, username: string, role: 'host' | 'guest') => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -67,11 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       });
       
-      if (!error && data) {
-        // Redirect to screen sharing application after successful signup
-        window.location.href = 'http://localhost:3010';
-      }
-      
+      handleRedirect({ data, error });
       return { data, error };
     } catch (error) {
       console.error('Error signing up:', error);
@@ -86,11 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password
       });
       
-      if (!error && data) {
-        // Redirect to screen sharing application after successful login
-        window.location.href = 'http://localhost:3010';
-      }
-      
+      handleRedirect({ data, error });
       return { data, error };
     } catch (error) {
       console.error('Error signing in:', error);
@@ -100,7 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      // Start the screen sharing application
       const screenAppUrl = 'http://localhost:3010';
       console.log('Starting screen sharing application:', screenAppUrl);
       

@@ -1379,22 +1379,31 @@ function startServer() {
     // START SERVER
     // ####################################################
 
-    const startServerOnPort = (port) => {
-        server.listen(port, () => {
-            console.log(`Server listening on port ${port}`);
-
-            if (config?.integrations?.ngrok?.enabled && config?.integrations?.ngrok?.authToken !== '') {
-                return ngrokStart();
-            }
-        }).on('error', (err) => {
-            if (err.code === 'EADDRINUSE') {
-                console.log(`Port ${port} is already in use, trying port ${port + 1}`);
-                startServerOnPort(port + 1);
-            } else {
-                console.error('Server error:', err);
-                process.exit(1);
-            }
-        });
+    const startServerOnPort = (port, maxAttempts = 5) => {
+        let attempts = 0;
+        
+        const tryPort = (currentPort) => {
+            attempts++;
+            server.listen(currentPort, () => {
+                console.log(`Server listening on port ${currentPort}`);
+                if (config?.integrations?.ngrok?.enabled && config?.integrations?.ngrok?.authToken !== '') {
+                    return ngrokStart();
+                }
+            }).on('error', (err) => {
+                if (err.code === 'EADDRINUSE' && attempts < maxAttempts) {
+                    console.log(`Port ${currentPort} is already in use, trying port ${currentPort + 1}`);
+                    tryPort(currentPort + 1);
+                } else if (attempts >= maxAttempts) {
+                    console.error(`Failed to find an available port after ${maxAttempts} attempts`);
+                    process.exit(1);
+                } else {
+                    console.error('Server error:', err);
+                    process.exit(1);
+                }
+            });
+        };
+        
+        tryPort(port);
     };
 
     startServerOnPort(config?.server?.listen?.port || 3010);
@@ -3583,6 +3592,33 @@ function startServer() {
             }
         }
     }
+
+    // Add health check endpoint
+    app.get('/health', (req, res) => {
+        const healthcheck = {
+            uptime: process.uptime(),
+            message: 'OK',
+            timestamp: Date.now()
+        };
+        try {
+            res.send(healthcheck);
+        } catch (error) {
+            healthcheck.message = error;
+            res.status(503).send();
+        }
+    });
+
+    // Add server status endpoint
+    app.get('/status', (req, res) => {
+        const status = {
+            connections: io.engine.clientsCount,
+            rooms: Array.from(roomList.keys()),
+            workers: workers.length,
+            uptime: process.uptime(),
+            timestamp: Date.now()
+        };
+        res.json(status);
+    });
 }
 
 process.on('SIGINT', () => {
