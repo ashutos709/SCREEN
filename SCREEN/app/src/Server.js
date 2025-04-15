@@ -3596,28 +3596,3 @@ process.on('SIGTERM', () => {
     htmlInjector.cleanup();
     process.exit();
 });
-
-// Export the initialization function for Vercel
-function initializeServer(app, server) {
-  // Initialize the server with the provided Express app and HTTP server
-  // This is a placeholder for the actual server initialization code
-  // You'll need to adapt this to your specific server implementation
-  
-  // Example:
-  // const io = new Server(server);
-  // io.on('connection', (socket) => {
-  //   console.log('A user connected');
-  // });
-  
-  // app.get('/api/health', (req, res) => {
-  //   res.json({ status: 'ok' });
-  // });
-  
-  // Return the initialized server
-  return server;
-}
-
-// Export the initialization function
-module.exports = {
-  initializeServer
-};

@@ -27,9 +27,7 @@
         "nms-start": "docker-compose -f rtmpServers/node-media-server/docker-compose.yml up -d",
         "nms-stop": "docker-compose -f rtmpServers/node-media-server/docker-compose.yml down",
         "nms-restart": "docker-compose -f rtmpServers/node-media-server/docker-compose.yml down && docker-compose -f rtmpServers/node-media-server/docker-compose.yml up -d",
-        "nms-logs": "docker logs -f SCREEN-nms",
-        "vercel-build": "npm run compile",
-        "vercel-dev": "vercel dev"
+        "nms-logs": "docker logs -f SCREEN-nms"
     },
     "repository": {
         "type": "git",
